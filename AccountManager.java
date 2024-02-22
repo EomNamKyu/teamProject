@@ -13,7 +13,6 @@ public class AccountManager {
 
     void addMember(){
         Member member = new Member();
-
         System.out.print("아이디 : ");
         member.setMember_id(stdIn.next());
 
@@ -34,7 +33,7 @@ public class AccountManager {
     } // 회원 등록
     boolean plusMember(Member member) {
         if (this.isMember(member.getMember_id())) {
-            System.out.println(member.getMember_id() + " 존재하는 아이디입니다.");
+            System.out.println(member.getMember_id() + "는 사용중인 아이디입니다.");
             return false;
         }
         return accountDao.insertMember(member);

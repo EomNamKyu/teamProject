@@ -27,11 +27,11 @@ public class AccountDao {
     boolean insertMember(Member member) {
         String sql = "INSERT INTO team_project.member VALUES (?,?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, member.getId());
-            preparedStatement.setString(2, member.getMember_id());
-            preparedStatement.setString(3, member.getName());
-            preparedStatement.setInt(4, member.getAge());
-            preparedStatement.setString(5, member.getAddress());
+           // preparedStatement.setInt(1, member.getId()); // 추가 할 때 자동으로 생성되어서 생략 가능
+            preparedStatement.setString(1, member.getMember_id());
+            preparedStatement.setString(2, member.getName());
+            preparedStatement.setInt(3, member.getAge());
+            preparedStatement.setString(4, member.getAddress());
 
             return preparedStatement.executeUpdate() == 1;
         } catch (SQLException e) {
@@ -41,20 +41,39 @@ public class AccountDao {
     boolean insertAccount(Account account) {
         String sql = "INSERT INTO team_project.account VALUES (?,?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, account.getId());
-            preparedStatement.setString(2, account.getMember_id());
-            preparedStatement.setInt(3, account.getAccount_type());
-            preparedStatement.setString(4, account.getAccount_number());
-            preparedStatement.setDouble(5, account.getBalance());
+           // preparedStatement.setInt(1, account.getId());  // 추가 할 때 자동으로 생성되어서 생략 가능
+            preparedStatement.setString(1, account.getMember_id());
+            preparedStatement.setInt(2, account.getAccount_type());
+            preparedStatement.setString(3, account.getAccount_number());
+            preparedStatement.setDouble(4, account.getBalance());
             preparedStatement.setDouble(5, account.getInterest_rate());
-            preparedStatement.setDouble(5, account.getFee_rate());
+            preparedStatement.setDouble(6, account.getFee_rate());
 
-            return preparedStatement.executeUpdate() == 1;
+            int result = preparedStatement.executeUpdate(); // executeUpdate() 는 select 제외 성공된 행의수 반환 수행된 행의수를 result에 저장
+            if (result > 0){
+                return true;// 성공적으로 반환을 했다면 6이므로 true 가 되고 메서드 종료
+            }else {
+                System.out.println("계정을 생성하는데 실패했습니다.");
+            }
+           // return preparedStatement.executeUpdate() == 1;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+           // throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return false; // 그게 아니라면 catch 가 실행 되고 false 로 메서드 종료
     } // 계좌 개설 디비 처리
-    void insertAccountHistory(AccountHistory accountHistory){}  // 거래 내역 저장
+    void insertAccountHistory(AccountHistory accountHistory){
+        String sql = "INSERT INTO insertAccountHistory (account_number, transaction_type, transaction_amount, balance) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1, accountHistory.getAccount_number());
+            preparedStatement.setString(2, accountHistory.getTransaction_type());
+            preparedStatement.setDouble(3, accountHistory.getTransaction_amount());
+            preparedStatement.setDouble(4, accountHistory.getBalance());
+            preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }  // 거래 내역 저장
     ArrayList<AccountHistory> selectAccountHistories(String accountId){} // 특정 계좌 번호에 대한 거래 내역 조회
     void disConnect() {
         try {
@@ -73,7 +92,7 @@ public class AccountDao {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     account = new Account();
-                    account.setId(resultSet.getInt("id"));
+                   // account.setId(resultSet.getInt("id")); // 자동생성이니 필요없지 않을까
                     account.setMember_id(resultSet.getString("member_id"));
                     account.setAccount_type(resultSet.getInt("account_type"));
                     account.setAccount_number(resultSet.getString("account_number"));
