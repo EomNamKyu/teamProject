@@ -1,4 +1,4 @@
-package teamProject;
+package teamProject.test;
 
 import java.sql.*;
 

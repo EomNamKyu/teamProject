@@ -63,7 +63,7 @@ public class AccountDao implements IAccountDao {
         return false; // 그게 아니라면 catch 가 실행 되고 false 로 메서드 종료
     } // 계좌 개설 디비 처리
     public void insertAccountHistory(AccountHistory accountHistory){
-        String sql = "INSERT INTO insertAccountHistory (account_number, transaction_type, transaction_amount, balance) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO accounthistory (account_number, transaction_type, transaction_amount, balance) VALUES (?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1, accountHistory.getAccount_number());
             preparedStatement.setString(2, accountHistory.getTransaction_type());
@@ -74,6 +74,7 @@ public class AccountDao implements IAccountDao {
             e.printStackTrace();
         }
     }  // 거래 내역 저장
+
     public ArrayList<AccountHistory> selectAccountHistories(String account_number){
         String sql = "SELECT transaction_type, transaction_amount, balance FROM team_project.accounthistory";
         ArrayList<AccountHistory> list = new ArrayList<>();
@@ -101,7 +102,7 @@ public class AccountDao implements IAccountDao {
     } // 데이터 베이스 연결 해제
     public Account selectAccount(String account_number) {
         Account account = null;
-        String sql = "SELECT * FROM account WHERE id= '" + account_number + "'";
+        String sql = "SELECT * FROM account WHERE account_number= '" + account_number + "'";
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             //preparedStatement.setString(1,account_number); insertAccount 처럼 ? 가 있는 것이 아니기 때문에 주석처리
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

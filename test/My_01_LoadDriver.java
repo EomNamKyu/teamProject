@@ -1,4 +1,4 @@
-package teamProject;
+package teamProject.test;
 
 public class My_01_LoadDriver {
     public static void loadDriver() {
